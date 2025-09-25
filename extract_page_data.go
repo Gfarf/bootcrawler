@@ -12,6 +12,7 @@ type PageData struct {
 	FirstParagraph string
 	OutgoingLinks  []string
 	ImageURLs      []string
+	count          int
 }
 
 func extractPageData(html, pageURL string) PageData {
@@ -33,5 +34,6 @@ func extractPageData(html, pageURL string) PageData {
 	data.FirstParagraph = getFirstParagraphFromHTML(html)
 	data.OutgoingLinks = links
 	data.ImageURLs = imgs
+	data.count = 1
 	return data
 }
