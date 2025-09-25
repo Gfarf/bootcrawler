@@ -2,12 +2,43 @@ package main
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
+	"github.com/PuerkitoBio/goquery"
 )
 
+func getURLsFromHTML(html string, baseURL *url.URL) ([]string, error) {
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+	if err != nil {
+		return []string{""}, fmt.Errorf("error parsing html Body, %v", err)
+	}
+	var res []string
+	doc.Find("a[href]").Each(func(_ int, s *goquery.Selection) {
+		href, ok := s.Attr("href")
+		if !ok {
+			return
+		}
+		href = strings.TrimSpace(href)
+		if href == "" {
+			return
+		}
+
+		u, err := url.Parse(href)
+		if err != nil {
+			fmt.Printf("couldn't parse href %q: %v\n", href, err)
+			return
+		}
+
+		resolved := baseURL.ResolveReference(u)
+		res = append(res, resolved.String())
+	})
+
+	return res, nil
+}
+
+/*
+no goquery version
 func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 	hNode, err := html.Parse(strings.NewReader(htmlBody))
 	if err != nil {
@@ -32,7 +63,6 @@ func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 	return res, nil
 }
 
-/*
 package main
 
 import (
