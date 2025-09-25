@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/url"
 	"strings"
 
@@ -18,7 +17,7 @@ func (cfg *config) crawlPage(rawCurrentURL string) {
 	cfg.mu.Lock()
 	vPages := len(cfg.pages)
 	cfg.mu.Unlock()
-	fmt.Printf("starting on new URL: %s, pages visited: %d, max pages: %d\n", rawCurrentURL, vPages, cfg.maxPages)
+	//fmt.Printf("starting on new URL: %s, pages visited: %d, max pages: %d\n", rawCurrentURL, vPages, cfg.maxPages)
 	if vPages >= cfg.maxPages {
 		return
 	}

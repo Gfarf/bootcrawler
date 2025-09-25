@@ -21,13 +21,14 @@ func main() {
 	args := os.Args
 	maxConcurrency := 5
 	maxPagesDefault := 10
+	filename := "report.csv"
 
 	// Verifica se existem mais argumentos.
 	if len(args) < 2 {
 		fmt.Println("no website provided")
 		os.Exit(1)
 	}
-	if len(args) > 4 {
+	if len(args) > 5 {
 		fmt.Println("too many arguments provided")
 		os.Exit(1)
 	}
@@ -42,10 +43,13 @@ func main() {
 	if len(args) == 4 {
 		num, err := strconv.Atoi(args[3])
 		if err != nil {
-			fmt.Println("Error converting string to int in second arg:", err)
+			fmt.Println("Error converting string to int in third arg:", err)
 			os.Exit(1)
 		}
 		maxPagesDefault = num
+	}
+	if len(args) == 5 {
+		filename = args[4]
 	}
 	var cfg config
 	BASE_URL := args[1]
@@ -69,7 +73,9 @@ func main() {
 	<-cfg.concurrencyControl
 	cfg.wg.Wait()
 	//fmt.Println("agora termina a parte recursiva")
-	for index, page := range cfg.pages {
-		fmt.Printf("page %s, count %d\n", index, page.count)
+	err = writeCSVReport(cfg.pages, filename)
+	if err != nil {
+		fmt.Printf("error writing csv file, %v\n", err)
+		os.Exit(1)
 	}
 }
